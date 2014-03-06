@@ -4,6 +4,8 @@ One thing, which in my opinion is missing, is possibility to see portal's organi
 
 Because of that I created a simple portlet plugin, which adds a new portlet - Organization Chart. This portlet displays hierarchy of Communities, Organizations, User Groups, Teams and Users as a tree. This is how it looks in action:
 
+![lf-org-chart](https://raw.github.com/mateuszwenus/blog-backup/master/2013/11/lf-org-chart0.png)
+
 The plugin can be downloaded from [https://github.com/mateuszwenus/lf-org-chart](https://github.com/mateuszwenus/lf-org-chart). It is compatible with Liferay 6.0.6. It is licensed under MIT license, so you can freely use it in both personal and commercial projects. 
 
 I hope you will find this plugin useful. If you have any comments, suggestions or problems with it, let me know.
