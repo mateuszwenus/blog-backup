@@ -63,4 +63,4 @@ SessionCustomActionLocalServiceUtil.execute(new SessionCallback() {
   }
 });
 ```
-BTW, if this solution looks similar to [HibernateTemplate.execute()](http://docs.spring.io/spring/docs/3.2.5.RELEASE/javadoc-api/org/springframework/orm/hibernate3/HibernateTemplate.html#execute%28org.springframework.orm.hibernate3.HibernateCallback%29) to you, then you are right - that method was my inspiration.
+BTW, if this solution looks similar to [`HibernateTemplate.execute()`](http://docs.spring.io/spring/docs/3.2.5.RELEASE/javadoc-api/org/springframework/orm/hibernate3/HibernateTemplate.html#execute%28org.springframework.orm.hibernate3.HibernateCallback%29) to you, then you are right - that method was my inspiration.
