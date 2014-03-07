@@ -1,11 +1,11 @@
-In [my recent Liferay project](https://github.com/mateuszwenus/blog-backup/blob/master/2013/11/Organization%20Chart%20in%20Liferay%206.0.6.md) I wanted to load list of all top-level organizations (organizations, which are not members of a community or another organization). There is no built-in method in any *LocalServiceUtil which returns what I needed. I also couldn't use DynamicQuery, because the query I wanted to run included groups_orgs table which is not mapped to any entity. 
+In [my recent Liferay project](https://github.com/mateuszwenus/blog-backup/blob/master/2013/11/Organization%20Chart%20in%20Liferay%206.0.6.md) I wanted to load list of all top-level organizations (organizations, which are not members of a community or another organization). There is no built-in method in any `*LocalServiceUtil` which returns what I needed. I also couldn't use `DynamicQuery`, because the query I wanted to run included groups_orgs table which is not mapped to any entity. 
 
 My first approach was the following code:
 ```java
-List&lt;Group&gt; communities = GroupLocalServiceUtil.search(PortalUtil.getCompanyId(req), null, null, null, QueryUtil.ALL_POS, QueryUtil.ALL_POS);
-Collection&lt;Object&gt; ids = new HashSet&lt;Object&gt;();
+List<Group> communities = GroupLocalServiceUtil.search(PortalUtil.getCompanyId(req), null, null, null, QueryUtil.ALL_POS, QueryUtil.ALL_POS);
+Collection<Object> ids = new HashSet<Object>();
 for (Group community : communities) {
-    List&lt;Organization&gt; communityOrganizations = OrganizationLocalServiceUtil.getGroupOrganizations(community.getPrimaryKey());
+    List<Organization> communityOrganizations = OrganizationLocalServiceUtil.getGroupOrganizations(community.getPrimaryKey());
     for (Organization org : communityOrganizations) {
         ids.add(org.getPrimaryKey());
     }
@@ -20,15 +20,15 @@ This is obviously not optimal - it executes too many queries and loads too much 
 First I created the following service.xml file:
 
 ```xml
-&lt;?xml version="1.0" encoding="UTF-8"?&gt;
-&lt;!DOCTYPE service-builder PUBLIC "-//Liferay//DTD Service Builder 6.0.0//EN" "http://www.liferay.com/dtd/liferay-service-builder_6_0_0.dtd"&gt;
-&lt;service-builder package-path="com.github.mateuszwenus.lf_org_chart.service_builder"&gt;
-    &lt;author&gt;Mateusz Wenus&lt;/author&gt;
-    &lt;namespace&gt;lf_org_chart&lt;/namespace&gt;
-    &lt;entity name="SessionCustomAction" local-service="true" remote-service="false"&gt;&lt;/entity&gt;
-&lt;/service-builder&gt;
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE service-builder PUBLIC "-//Liferay//DTD Service Builder 6.0.0//EN" "http://www.liferay.com/dtd/liferay-service-builder_6_0_0.dtd">
+<service-builder package-path="com.github.mateuszwenus.lf_org_chart.service_builder">
+    <author>Mateusz Wenus</author>
+    <namespace>lf_org_chart</namespace>
+    <entity name="SessionCustomAction" local-service="true" remote-service="false"></entity>
+</service-builder>
 ```
-The file contains entity with no columns, which makes service builder generate @Transactional service layer, but no dao/persistence layer. I ran service builder and then I added the following method to SessionCustomActionLocalServiceImpl:
+The file contains entity with no columns, which makes service builder generate `@Transactional` service layer, but no dao/persistence layer. I ran service builder and then I added the following method to `SessionCustomActionLocalServiceImpl`:
 ```java
 public Object execute(SessionCallback callback) {
   SessionFactory sessionFactory = (SessionFactory) PortalBeanLocatorUtil.locate("liferaySessionFactory");
@@ -45,13 +45,13 @@ public Object execute(SessionCallback callback) {
   }
 }
 ```
-SessionCallback is a simple interface which allows to execute any action with a Session:
+`SessionCallback` is a simple interface which allows to execute any action with a `Session`:
 ```java
 public interface SessionCallback {
   Object execute(Session session, Dialect dialect) throws Exception;
 }
 ```
-Then I ran service builder again and execute() method was added to SessionCustomActionLocalServiceUtil. Finally in my portlet I could use the following code to find top level organizations:
+Then I ran service builder again and `execute()` method was added to `SessionCustomActionLocalServiceUtil`. Finally in my portlet I could use the following code to find top level organizations:
 ```java
 SessionCustomActionLocalServiceUtil.execute(new SessionCallback() {
   public Object execute(Session session, Dialect dialect) throws Exception {
